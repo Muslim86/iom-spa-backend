@@ -19,4 +19,8 @@ export class UsersController {
   createUser(@Req() req) {
     return this.userService.createUser(req.body);
   }
+  @Post('/many')
+  createManyUser(@Req() req) {
+    return this.userService.createManyUsers(req.body.users);
+  }
 }

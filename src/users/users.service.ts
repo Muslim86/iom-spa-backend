@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from './users.model';
-import { Op } from 'sequelize';
+import { ProfilesService } from '../profiles/profiles.service';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User) private userRepository: typeof User) {
+  constructor(@InjectModel(User) private userRepository: typeof User,
+              private profileService: ProfilesService) {
   }
 
   async getUsers(count = 10, page = 1) {
@@ -13,12 +14,22 @@ export class UsersService {
     const min = (page * count) - count;
     return {
       users: await this.userRepository.findAll({ offset: min, limit: max }),
-      usersCount: await this.userRepository.count(),
+      usersCount: await this.userRepository.count()
     };
   }
 
+  async getUser(id) {
+    return await this.userRepository.findOne({where: {id: id}})
+  }
+
+  async createManyUsers(users) {
+    users.map(user => this.userRepository.create(user)).map(user => this.profileService.createProfile({ userId: user.id, roles: process.env.DEFAULT_USER_ROLE }));
+    return { status: 200 };
+  }
+
   async createUser(user) {
-    await this.userRepository.create(user);
+    const newUser = await this.userRepository.create(user);
+    await this.profileService.createProfile({ userId: newUser.id, roles: process.env.DEFAULT_USER_ROLE });
     return { status: 200 };
   }
 }
