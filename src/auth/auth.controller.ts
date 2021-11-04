@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpException, Post, Req, Res} from '@nestjs/common';
+import { Body, Controller, Get, HttpException, HttpStatus, Post, Req, Res } from '@nestjs/common';
 import { Response, Request} from 'express';
 import { AuthService } from './auth.service';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
@@ -23,7 +23,7 @@ export class AuthController {
   async login(@Body() userDto: CreateUserDto, @Res({passthrough: true}) res: Response) {
     const data = await this.authService.login(userDto);
     if (!data) return {msg:'invalid user'};
-    res.cookie('accessToken', (await data).accessToken, {maxAge: 60 * 60 * 60 * 1000, httpOnly: true});
+    res.cookie('accessToken', (data).profile.accessToken, {maxAge: 60 * 60 * 60 * 1000, httpOnly: true});
     return data;
   }
 
@@ -31,10 +31,18 @@ export class AuthController {
   @ApiResponse({status: 200, type: [User]})
   @Get('/me')
   async getUser(@Req() request: Request) {
+    console.log(request.cookies)
     const { accessToken } = request.cookies;
     if (!accessToken) {
       throw new HttpException('cookie not found', 404)
     }
     return await this.authService.getUserByAccessToken(accessToken);
+  }
+
+  @ApiOperation({summary: 'Логаут пользователя'})
+  @Get('/logout')
+  async logout(@Res({passthrough: true}) res: Response) {
+    res.clearCookie('accessToken');
+    return HttpStatus.OK
   }
 }

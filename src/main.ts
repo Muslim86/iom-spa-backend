@@ -8,7 +8,7 @@ config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.enableCors({origin: true})
+  app.enableCors({credentials: true, origin: 'http://localhost:3000'})
   app.use(cookieParser());
 
   const port = process.env.APP_PORT || 5000;
