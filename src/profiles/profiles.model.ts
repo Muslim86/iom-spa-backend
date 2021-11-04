@@ -2,10 +2,11 @@ import { Column, DataType, Model, Table } from 'sequelize-typescript';
 import { ApiProperty } from '@nestjs/swagger';
 
 interface ProfileCreationAttr {
-  name: string,
-  gender: string,
-  status: string,
-  photo: string,
+  userId: number,
+  posts?: [],
+  roles?: string,
+  contacts?: string,
+  profilePhoto?: string,
 }
 
 @Table({ tableName: 'profiles' })

@@ -3,6 +3,7 @@ import { UsersModule } from './users/users.module';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { User } from './users/users.model';
 import { ProfilesModule } from './profiles/profiles.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [UsersModule,
@@ -16,7 +17,8 @@ import { ProfilesModule } from './profiles/profiles.module';
       models: [User],
       autoLoadModels: true
     }),
-    ProfilesModule],
+    ProfilesModule,
+    AuthModule],
   controllers: [],
   providers: []
 })

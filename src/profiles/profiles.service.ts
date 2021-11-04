@@ -2,6 +2,7 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { Profile } from './profiles.model';
 import { UsersService } from '../users/users.service';
+import { CreateProfileDto } from './dto/create-profile.dto';
 
 @Injectable()
 export class ProfilesService {
@@ -17,8 +18,8 @@ export class ProfilesService {
     };
   }
 
-  async createProfile(profile) {
-    await this.profileRepository.create(profile);
+  async createProfile(dto: CreateProfileDto) {
+    await this.profileRepository.create(dto);
     return { status: 200 };
   }
 }

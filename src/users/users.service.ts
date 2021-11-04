@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from './users.model';
 import { ProfilesService } from '../profiles/profiles.service';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -27,9 +28,9 @@ export class UsersService {
     return { status: 200 };
   }
 
-  async createUser(user) {
-    const newUser = await this.userRepository.create(user);
+  async createUser(dto: CreateUserDto) {
+    const newUser = await this.userRepository.create(dto);
     await this.profileService.createProfile({ userId: newUser.id, roles: process.env.DEFAULT_USER_ROLE });
-    return { status: 200 };
+    return newUser;
   }
 }
