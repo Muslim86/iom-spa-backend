@@ -1,10 +1,11 @@
 import { Body, Controller, Get, HttpException, HttpStatus, Post, Req, Res } from '@nestjs/common';
 import { Response, Request} from 'express';
 import { AuthService } from './auth.service';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { User } from '../users/users.model';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {
@@ -31,7 +32,6 @@ export class AuthController {
   @ApiResponse({status: 200, type: [User]})
   @Get('/me')
   async getUser(@Req() request: Request) {
-    console.log(request.cookies)
     const { accessToken } = request.cookies;
     if (!accessToken) {
       throw new HttpException('cookie not found', 404)

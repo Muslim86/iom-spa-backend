@@ -7,6 +7,8 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { Auth } from './auth.model';
 import { User } from '../users/users.model';
 import { ProfilesModule } from '../profiles/profiles.module';
+import { FollowersModule } from '../followers/followers.module';
+import { Follower } from '../followers/followers.model';
 
 @Module({
   controllers: [AuthController],
@@ -15,7 +17,8 @@ import { ProfilesModule } from '../profiles/profiles.module';
   imports: [
     forwardRef(() => UsersModule),
     forwardRef(() => ProfilesModule),
-    SequelizeModule.forFeature([Auth, User])
+    forwardRef(() => FollowersModule),
+    SequelizeModule.forFeature([Auth, User, Follower])
   ],
   exports: [
     AuthService,

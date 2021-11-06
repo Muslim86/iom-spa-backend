@@ -1,21 +1,38 @@
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from './users.model';
 import { ProfilesService } from '../profiles/profiles.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { FollowersService } from '../followers/followers.service';
+import { UserDto } from './dto/user.dto';
 
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User) private userRepository: typeof User,
-              private profileService: ProfilesService) {
+              private profileService: ProfilesService,
+              @Inject(forwardRef(() => FollowersService))
+              private followerService: FollowersService) {
   }
 
-  async getUsers(count = 10, page = 1) {
+  async getUsers(count = 10, page = 1, userId) {
     const max = count;
     const min = (page * count) - count;
+    const users = await this.userRepository.findAll({ offset: min, limit: max });
+    const subscribes = await this.followerService.getSubscribes(userId)
+    const userSubscribes = users.map(user => {
+      return new UserDto({
+        id: user.id,
+        password: user.password,
+        status: user.status,
+        name: user.name,
+        gender: user.gender,
+        photo: user.photo,
+        follower: !!subscribes.find(sub => user.id === sub.subscribeId)
+      })
+    })
     return {
-      users: await this.userRepository.findAll({ offset: min, limit: max }),
-      usersCount: await this.userRepository.count()
+      users: userSubscribes,
+      usersCount: await this.userRepository.count(),
     };
   }
 

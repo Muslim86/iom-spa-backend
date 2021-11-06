@@ -15,4 +15,5 @@ export class CreateUserDto {
 
   @ApiProperty({ example: 'example.jpg', description: 'user photo' })
   readonly photo?: string;
+
 }

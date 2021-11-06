@@ -6,6 +6,7 @@ interface UserCreationAttr {
   gender?: string,
   status?: string,
   photo?: string,
+  follower?:any,
 }
 
 @Table({ tableName: 'users' })
