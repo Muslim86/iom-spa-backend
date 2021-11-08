@@ -1,5 +1,5 @@
-import { Body, Controller, Get, HttpException, Post, Req } from '@nestjs/common';
-import { ApiOperation, ApiProperty, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, HttpException, Post, Put, Req } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Request } from 'express';
@@ -22,7 +22,7 @@ export class UsersController {
     if (!(user instanceof HttpException)) {
       userId = user.user.id;
     } else {
-      return user
+      return user;
     }
     return this.userService.getUsers(req.query.count, req.query.page, userId);
   }
@@ -37,5 +37,20 @@ export class UsersController {
   @Post('/many')
   createManyUser(@Req() req) {
     return this.userService.createManyUsers(req.body.users);
+  }
+
+  @ApiOperation({ summary: 'put user status' })
+  @Put('/status')
+  async updateStatus(@Body() body, @Req() request: Request) {
+    const newStatus = body.status;
+    const { accessToken } = request.cookies;
+    const user = await this.authService.getUserByAccessToken(accessToken);
+    let userId = null;
+    if (!(user instanceof HttpException)) {
+      userId = user.user.id;
+    } else {
+      return user;
+    }
+    return this.userService.updateStatus(userId, newStatus);
   }
 }

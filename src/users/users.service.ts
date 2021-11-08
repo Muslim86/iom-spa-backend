@@ -18,7 +18,7 @@ export class UsersService {
     const max = count;
     const min = (page * count) - count;
     const users = await this.userRepository.findAll({ offset: min, limit: max });
-    const subscribes = await this.followerService.getSubscribes(userId)
+    const subscribes = await this.followerService.getSubscribes(userId);
     const userSubscribes = users.map(user => {
       return new UserDto({
         id: user.id,
@@ -28,20 +28,22 @@ export class UsersService {
         gender: user.gender,
         photo: user.photo,
         follower: !!subscribes.find(sub => user.id === sub.subscribeId)
-      })
-    })
+      });
+    });
     return {
       users: userSubscribes,
-      usersCount: await this.userRepository.count(),
+      usersCount: await this.userRepository.count()
     };
   }
 
   async getUser(id) {
-    return await this.userRepository.findOne({where: {id: id}})
+    return await this.userRepository.findOne({ where: { id: id } });
   }
 
   async createManyUsers(users) {
-    users.map(user => this.userRepository.create(user)).map(user => this.profileService.createProfile({ userId: user.id, roles: process.env.DEFAULT_USER_ROLE }));
+    users
+      .map(user => this.userRepository.create(user))
+      .map(user => this.profileService.createProfile({ userId: user.id, roles: process.env.DEFAULT_USER_ROLE }));
     return { status: 200 };
   }
 
@@ -49,5 +51,13 @@ export class UsersService {
     const newUser = await this.userRepository.create(dto);
     await this.profileService.createProfile({ userId: newUser.id, roles: process.env.DEFAULT_USER_ROLE });
     return newUser;
+  }
+
+  async updateStatus(id, status) {
+    const user = await this.getUser(id);
+    user.status = status;
+    await user.save();
+    console.log(user, status)
+    return user
   }
 }

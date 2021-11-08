@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Put } from '@nestjs/common';
 import { ProfilesService } from './profiles.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
