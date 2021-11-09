@@ -52,6 +52,7 @@ export class AuthService {
 
   async login(userDto: CreateUserDto) {
     const user = await this.userRepository.findOne({ where: { name: userDto.name } });
+    if (!user) return new HttpException('Неверный логин или пароль!', 404)
     const passwordEquals = await bcrypt.compare(userDto.password, user.password);
     if (passwordEquals) {
       return {
